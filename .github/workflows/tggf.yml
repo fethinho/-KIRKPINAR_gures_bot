@@ -14,8 +14,8 @@ jobs:
       - uses: actions/cache@v4
         with:
           path: tggf_state.json
-          key: state-${{ github.run_id }}
-          restore-keys: state-
+          key: tggf-state-v1
+          restore-keys: tggf-state-v1
 
       - uses: actions/setup-python@v5
         with:
@@ -23,7 +23,7 @@ jobs:
 
       - run: pip install requests beautifulsoup4
 
-      # 3 kez çalıştır, araya 90 saniye koy
+      # 3 kez calistir, araya 90 saniye koy
       - run: python tggf_bot.py
       - run: sleep 90
       - run: python tggf_bot.py
