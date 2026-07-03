@@ -166,16 +166,18 @@ def main():
                             f"➕ <b>{s['sporcu']}</b> ({s['il']}) - Eklendi"
                         )
                     elif s["sonuc"] and s["sonuc"] != eski.get("sonuc", ""):
-                        em2 = "✅" if s["sonuc"] in ["G", "GALIP", "1", "W"] else "❌"
+                       sonuc_upper = s["sonuc"].upper().strip()
+                        em2 = "✅" if any(x in sonuc_upper for x in ["GAL", "G", "1", "W"]) else "❌"
                         tur = f" | Tur: {s['tur']}" if s["tur"] else ""
                         mesajlar.append(
                             f"{em2} <b>{s['sporcu']}</b> ({s['il']}) "
                             f"→ {s['sonuc']}{tur}"
                         )
                     elif s["tur"] and s["tur"] != eski.get("tur", ""):
-                        mesajlar.append(
-                            f"🔄 <b>{s['sporcu']}</b> ({s['il']}) "
-                            f"→ {s['tur']}. TUR"
+                        durum = "GALİP" if "✅" in em2 else "MAĞLUP"
+mesajlar.append(
+    f"{em2} <b>{s['sporcu']}</b> ({s['il']}) — {durum}{tur}"
+
                         )
 
                 if mesajlar:
