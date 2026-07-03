@@ -8,8 +8,7 @@ from datetime import datetime, timezone, timedelta
 BOT_TOKEN  = "8185628247:AAGh1gBPwzBaXLTZvU6RRUfXM3xN68eXmdg"
 CHAT_ID    = "-1003562869508"
 STATE_FILE = "tggf_state.json"
-
-TR = timezone(timedelta(hours=3))
+TR         = timezone(timedelta(hours=3))
 
 KATEGORILER = {
     "Baş Boyu":   "VFZSUlBRPT0=",
@@ -42,12 +41,23 @@ def sayfa_cek(boy):
         if len(td) < 4:
             continue
         satirlar.append({
+            "sira":   td[0].get_text(strip=True),
+            "kura":   td[1].get_text(strip=True),
             "sporcu": td[2].get_text(strip=True),
             "il":     td[3].get_text(strip=True),
             "sonuc":  td[4].get_text(strip=True) if len(td) > 4 else "",
             "tur":    td[5].get_text(strip=True) if len(td) > 5 else "",
         })
     return satirlar
+
+
+def eslesmeler_olustur(satirlar):
+    """Kura numarasına göre eşleşme çiftleri oluşturur."""
+    sirali = [s for s in satirlar if s.get("sira", "").isdigit()]
+    eslesmeler = []
+    for i in range(0, len(sirali) - 1, 2):
+        eslesmeler.append((sirali[i], sirali[i + 1]))
+    return eslesmeler
 
 
 def tg(mesaj):
@@ -60,7 +70,7 @@ def tg(mesaj):
         },
         timeout=10
     )
-    tg("🔧 Bot çalışıyor - test mesajı")
+
 
 def state_yukle():
     if os.path.exists(STATE_FILE):
@@ -74,9 +84,37 @@ def state_kaydet(s):
         json.dump(s, f, ensure_ascii=False, indent=2)
 
 
+def eslesme_mesaji(kategori, eslesmeler):
+    saat = datetime.now(TR).strftime("%H:%M")
+    em   = EMOJI.get(kategori, "🤼")
+    satirlar = [
+        f"{em} <b>665.KIRKPINAR — {kategori.upper()}</b>",
+        f"🕐 {saat} | TUR EŞLEŞMELERİ\n"
+    ]
+    for i, (a, b) in enumerate(eslesmeler, 1):
+        satirlar.append(
+            f"<b>{i}.</b> {a['sporcu']} ({a['il']})\n"
+            f"       ⚔️  VS  ⚔️\n"
+            f"       {b['sporcu']} ({b['il']})\n"
+        )
+    satirlar.append("📊 Kaynak: tggf.com.tr")
+    return "\n".join(satirlar)
+
+
+def sonuc_mesaji(kategori, mesajlar):
+    saat = datetime.now(TR).strftime("%H:%M")
+    em   = EMOJI.get(kategori, "🤼")
+    baslik = (
+        f"{em} <b>665.KIRKPINAR — {kategori.upper()}</b>\n"
+        f"🕐 {saat} | SONUÇ GÜNCELLEMESİ\n\n"
+    )
+    return baslik + "\n".join(mesajlar) + "\n\n📊 Kaynak: tggf.com.tr"
+
+
 def main():
     state = state_yukle()
     saat  = datetime.now(TR).strftime("%H:%M")
+    print(f"[{saat}] Bot başladı...")
 
     for kategori, boy_param in KATEGORILER.items():
         try:
@@ -85,34 +123,46 @@ def main():
                 f"{s['sporcu']}|{s['il']}": s
                 for s in state.get(kategori, [])
             }
-            mesajlar = []
 
-            for s in yeni:
-                key  = f"{s['sporcu']}|{s['il']}"
-                eski = eski_map.get(key)
+            # ── İLK ÇALIŞMA: Eşleşmeleri gönder ──────────────────
+            if not state.get(kategori) and yeni:
+                eslesmeler = eslesmeler_olustur(yeni)
+                if eslesmeler:
+                    tg(eslesme_mesaji(kategori, eslesmeler))
+                    print(f"[⚔️] {kategori}: eşleşmeler gönderildi")
 
-                # Yeni sporcu — sadece state doluysa bildir
-                if eski is None and state.get(kategori):
-                    mesajlar.append(
-                        f"➕ <b>{s['sporcu']}</b> ({s['il']}) — Eklendi"
-                    )
-                # Sonuç değişimi
-                elif eski is not None and s["sonuc"] and s["sonuc"] != eski["sonuc"]:
-                    em  = "✅" if s["sonuc"] in ["G", "GALİP", "1", "W"] else "❌"
-                    tur = f" | Tur:{s['tur']}" if s["tur"] else ""
-                    mesajlar.append(
-                        f"{em} <b>{s['sporcu']}</b> ({s['il']}) → {s['sonuc']}{tur}"
-                    )
-
-            if mesajlar:
-                baslik = (
-                    f"{EMOJI[kategori]} <b>665.KIRKPINAR — "
-                    f"{kategori.upper()}</b>\n🕐 {saat}\n\n"
-                )
-                tg(baslik + "\n".join(mesajlar))
-                print(f"[✓] {kategori}: {len(mesajlar)} güncelleme")
+            # ── SONRAKI ÇALIŞMALAR: Değişimleri gönder ───────────
             else:
-                print(f"[-] {kategori}: değişim yok")
+                mesajlar = []
+                for s in yeni:
+                    key  = f"{s['sporcu']}|{s['il']}"
+                    eski = eski_map.get(key)
+
+                    # Yeni sporcu eklendiyse
+                    if eski is None:
+                        mesajlar.append(
+                            f"➕ <b>{s['sporcu']}</b> ({s['il']}) — Eklendi"
+                        )
+                    # Sonuç değiştiyse
+                    elif s["sonuc"] and s["sonuc"] != eski.get("sonuc", ""):
+                        em  = "✅" if s["sonuc"] in ["G", "GALİP", "1", "W"] else "❌"
+                        tur = f" | Tur: {s['tur']}" if s["tur"] else ""
+                        mesajlar.append(
+                            f"{em} <b>{s['sporcu']}</b> ({s['il']}) "
+                            f"→ {s['sonuc']}{tur}"
+                        )
+                    # Tur değiştiyse (yeni tura geçti)
+                    elif s["tur"] and s["tur"] != eski.get("tur", ""):
+                        mesajlar.append(
+                            f"🔄 <b>{s['sporcu']}</b> ({s['il']}) "
+                            f"→ {s['tur']}. TUR"
+                        )
+
+                if mesajlar:
+                    tg(sonuc_mesaji(kategori, mesajlar))
+                    print(f"[✓] {kategori}: {len(mesajlar)} güncelleme gönderildi")
+                else:
+                    print(f"[-] {kategori}: değişim yok")
 
             state[kategori] = yeni
 
@@ -122,7 +172,7 @@ def main():
         time.sleep(1)
 
     state_kaydet(state)
-    print(f"[{saat}] Tamamlandı.")
+    print(f"[{datetime.now(TR).strftime('%H:%M')}] Tamamlandı.")
 
 
 if __name__ == "__main__":
