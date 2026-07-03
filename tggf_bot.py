@@ -157,8 +157,7 @@ def main():
                             durum = "MAGUP"
                         tur = f" | Tur: {s['tur']}" if s["tur"] else ""
                         mesajlar.append(f"{em2} <b>{s['sporcu']}</b> ({s['il']}) - {durum}{tur}")
-                    elif s["tur"] and s["tur"] != eski.get("tur", ""):
-                        mesajlar.append(f"🔄 <b>{s['sporcu']}</b> ({s['il']}) - {s['tur']}. TUR")
+                    
 
                 if mesajlar:
                     tg(sonuc_mesaji(kategori, mesajlar))
