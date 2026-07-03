@@ -52,11 +52,23 @@ def sayfa_cek(boy):
 
 
 def eslesmeler_olustur(satirlar):
-    """Kura numarasına göre eşleşme çiftleri oluşturur."""
-    sirali = [s for s in satirlar if s.get("sira", "").isdigit()]
+    """Kura numarasını integer'a çevirip sıralı eşleştirir."""
+    sirali = []
+    for s in satirlar:
+        try:
+            kura_no = int(s.get("kura", "0"))
+            if kura_no > 0:
+                sirali.append((kura_no, s))
+        except:
+            continue
+    
+    # Kura numarasına göre sırala
+    sirali.sort(key=lambda x: x[0])
+    
+    # Ardışık çiftleri eşleştir (1-2, 3-4, 5-6...)
     eslesmeler = []
     for i in range(0, len(sirali) - 1, 2):
-        eslesmeler.append((sirali[i], sirali[i + 1]))
+        eslesmeler.append((sirali[i][1], sirali[i+1][1]))
     return eslesmeler
 
 
