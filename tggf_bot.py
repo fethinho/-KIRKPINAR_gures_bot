@@ -60,7 +60,7 @@ def tg(mesaj):
         },
         timeout=10
     )
-
+    tg("🔧 Bot çalışıyor - test mesajı")
 
 def state_yukle():
     if os.path.exists(STATE_FILE):
