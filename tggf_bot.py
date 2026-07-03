@@ -55,9 +55,28 @@ def sayfa_cek(boy):
         })
     return satirlar
 
-def galip_mi(sonuc_text):
+def sonuc_tipi(sonuc_text, tur_text):
+    """
+    Dondurulen degerler: 'galip', 'maglup', 'tur_atladi', 'bekliyor'
+    - tur sutununda deger var AMA sonuc sutunu bos/TUR ise -> tur atladi (bye)
+    - sonuc GALIP iceriyorsa -> galip
+    - sonuc bossa -> bekliyor
+    - diger -> maglup
+    """
     s = sonuc_text.upper().strip()
-    return "GAL" in s or s == "G" or s == "1" or s == "W"
+    t = tur_text.upper().strip()
+
+    # Tur atladi: sonuc sutunu bos ya da 'TUR' yazıyor ama tur numarasi var
+    if t and (s == "" or s == "TUR" or s == "-" or s == "--"):
+        return "tur_atladi"
+
+    if not s or s == "-" or s == "--":
+        return "bekliyor"
+
+    if "GAL" in s or s == "G" or s == "1" or s == "W":
+        return "galip"
+
+    return "maglup"
 
 def eslesmeler_olustur(satirlar):
     sirali = [s for s in satirlar
@@ -114,6 +133,20 @@ def sonuc_mesaji(kategori, mesajlar):
     baslik = f"{em} <b>665.KIRKPINAR - {ad}</b>\n\U0001f550 {saat} | SONUC\n\n"
     return baslik + "\n".join(mesajlar) + "\n\n\U0001f4ca Kaynak: tggf.com.tr"
 
+def sporcu_satir_formatla(s):
+    """Bir sporcu icin Telegram mesaj satirini olusturur."""
+    tip = sonuc_tipi(s.get("sonuc", ""), s.get("tur", ""))
+    tur_no = s.get("tur", "").strip()
+    tur_yazisi = f" | Tur: {tur_no}" if tur_no else ""
+
+    if tip == "galip":
+        return f"\u2705 <b>{s['sporcu']}</b> ({s['il']}) - GALIP{tur_yazisi}"
+    elif tip == "maglup":
+        return f"\u274c <b>{s['sporcu']}</b> ({s['il']}) - MAGLUP{tur_yazisi}"
+    elif tip == "tur_atladi":
+        return f"\U0001f503 <b>{s['sporcu']}</b> ({s['il']}) - TUR ATLADI (Bye){tur_yazisi}"
+    return None
+
 def main():
     state = state_yukle()
     saat = datetime.now(TR).strftime("%H:%M")
@@ -140,19 +173,15 @@ def main():
                 if eslesmeler:
                     tg(eslesme_mesaji(kategori, eslesmeler))
                     print(f"[eslesme] {kategori}: {len(eslesmeler)} cift")
-                # Sonuc olan satirlar varsa onlari da gonder
-                sonuc_satirlari = [s for s in yeni if s.get("sonuc", "").strip()]
-                if sonuc_satirlari:
-                    mesajlar = []
-                    for s in sonuc_satirlari:
-                        if galip_mi(s["sonuc"]):
-                            em2 = "\u2705"
-                            durum = "GALIP"
-                        else:
-                            em2 = "\u274c"
-                            durum = "MAGLUP"
-                        tur = f" | Tur: {s['tur']}" if s.get("tur", "") else ""
-                        mesajlar.append(f"{em2} <b>{s['sporcu']}</b> ({s['il']}) - {durum}{tur}")
+                # Sonucu belli olan satirlar icin mesaj gonder
+                mesajlar = []
+                for s in yeni:
+                    tip = sonuc_tipi(s.get("sonuc", ""), s.get("tur", ""))
+                    if tip != "bekliyor":
+                        satir = sporcu_satir_formatla(s)
+                        if satir:
+                            mesajlar.append(satir)
+                if mesajlar:
                     tg(sonuc_mesaji(kategori, mesajlar))
                     print(f"[ilk-sonuc] {kategori}: {len(mesajlar)} sporcu")
             else:
@@ -162,16 +191,18 @@ def main():
                     key = f"{s['sporcu']}|{s['il']}"
                     eski = eski_map.get(key)
                     sonuc_yeni = s.get("sonuc", "").strip()
+                    tur_yeni   = s.get("tur", "").strip()
                     sonuc_eski = eski.get("sonuc", "").strip() if eski else ""
-                    if sonuc_yeni and sonuc_yeni != sonuc_eski:
-                        if galip_mi(sonuc_yeni):
-                            em2 = "\u2705"
-                            durum = "GALIP"
-                        else:
-                            em2 = "\u274c"
-                            durum = "MAGLUP"
-                        tur = f" | Tur: {s['tur']}" if s.get("tur", "") else ""
-                        mesajlar.append(f"{em2} <b>{s['sporcu']}</b> ({s['il']}) - {durum}{tur}")
+                    tur_eski   = eski.get("tur", "").strip() if eski else ""
+
+                    tip_yeni = sonuc_tipi(sonuc_yeni, tur_yeni)
+                    tip_eski = sonuc_tipi(sonuc_eski, tur_eski)
+
+                    # Sadece tip degistiyse mesaj at (bekliyor -> galip/maglup/tur_atladi)
+                    if tip_yeni != "bekliyor" and tip_yeni != tip_eski:
+                        satir = sporcu_satir_formatla(s)
+                        if satir:
+                            mesajlar.append(satir)
 
                 if mesajlar:
                     tg(sonuc_mesaji(kategori, mesajlar))
