@@ -3,7 +3,7 @@ from bs4 import BeautifulSoup
 import json
 import os
 import time
-from datetime import datetime
+from datetime import datetime, timezone, timedelta
 
 BOT_TOKEN = "8185628247:AAGh1gBPwzBaXLTZvU6RRUfXM3xN68eXmdg"
 CHAT_ID   = "-1003562869508"
@@ -62,7 +62,8 @@ def state_kaydet(s):
 
 def main():
     state = state_yukle()
-    saat = datetime.now().strftime("%H:%M")
+    TR = timezone(timedelta(hours=3))
+    saat = datetime.now(TR).strftime("%H:%M")
 
     for kategori, boy_param in KATEGORILER.items():
         try:
@@ -74,8 +75,8 @@ def main():
             for s in yeni:
                 key = f"{s['sporcu']}|{s['il']}"
                 eski = eski_map.get(key)
-                if not eski:
-                    mesajlar.append(f"➕ <b>{s['sporcu']}</b> ({s['il']}) — Eklendi")
+                if not eski and state.get(kategori):  # state doluysa yeni ekleme say
+                mesajlar.append(f"➕ <b>{s['sporcu']}</b> ({s['il']}) — Eklendi")
                 elif s["sonuc"] and s["sonuc"] != eski["sonuc"]:
                     em = "✅" if s["sonuc"] in ["G","GALİP","1","W"] else "❌"
                     tur = f" | Tur:{s['tur']}" if s["tur"] else ""
