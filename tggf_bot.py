@@ -11,15 +11,21 @@ STATE_FILE = "tggf_state.json"
 TR         = timezone(timedelta(hours=3))
 
 KATEGORILER = {
-    "Baş Boyu":   "VFZSUlBRPT0=",
-    "BaşAltı":    "VFZSTlBRPT0=",
-    "Büyük Orta": "VFZSSlBRPT0=",
+    "Bas Boyu":   "VFZSUlBRPT0=",
+    "BasAlti":    "VFZSTlBRPT0=",
+    "Buyuk Orta": "VFZSSlBRPT0=",
 }
 
 EMOJI = {
-    "Baş Boyu":   "🥇",
-    "BaşAltı":    "🥈",
-    "Büyük Orta": "🥉",
+    "Bas Boyu":   "🥇",
+    "BasAlti":    "🥈",
+    "Buyuk Orta": "🥉",
+}
+
+KATEGORI_ADI = {
+    "Bas Boyu":   "BAS BOYU",
+    "BasAlti":    "BASALTI",
+    "Buyuk Orta": "BUYUK ORTA",
 }
 
 BASE = "https://tggf.com.tr/index.php?cat=website&subcat=sporcu-sonucesleme&edit=VFhwRk1RPT0="
@@ -52,23 +58,26 @@ def sayfa_cek(boy):
 
 
 def eslesmeler_olustur(satirlar):
-    """Kura numarasını integer'a çevirip sıralı eşleştirir."""
+    """
+    Sayfadaki HTML satir rengi: mavi=cift sira, sari=tek sira.
+    Asil kural: kura numaralari ardisik cifti olusturur.
+    01+02=eslesme, 03+04=eslesme, 05+06=eslesme...
+    Sadece sira numarasi olan (X olmayan) sporcular eslesir.
+    """
+    # Sadece sira numarasi olan sporuclari al
     sirali = []
     for s in satirlar:
-        try:
-            kura_no = int(s.get("kura", "0"))
-            if kura_no > 0:
-                sirali.append((kura_no, s))
-        except:
-            continue
-    
-    # Kura numarasına göre sırala
-    sirali.sort(key=lambda x: x[0])
-    
-    # Ardışık çiftleri eşleştir (1-2, 3-4, 5-6...)
+        sira = s.get("sira", "").strip()
+        if sira and sira != "--" and sira != "-" and sira.isdigit():
+            sirali.append(s)
+
+    # Sira numarasina gore sirala
+    sirali.sort(key=lambda x: int(x["sira"]))
+
+    # Ardisik ikili grupla: 1-2, 3-4, 5-6...
     eslesmeler = []
     for i in range(0, len(sirali) - 1, 2):
-        eslesmeler.append((sirali[i][1], sirali[i+1][1]))
+        eslesmeler.append((sirali[i], sirali[i + 1]))
     return eslesmeler
 
 
@@ -99,34 +108,36 @@ def state_kaydet(s):
 def eslesme_mesaji(kategori, eslesmeler):
     saat = datetime.now(TR).strftime("%H:%M")
     em   = EMOJI.get(kategori, "🤼")
+    ad   = KATEGORI_ADI.get(kategori, kategori)
     satirlar = [
-        f"{em} <b>665.KIRKPINAR — {kategori.upper()}</b>",
-        f"🕐 {saat} | TUR EŞLEŞMELERİ\n"
+        f"{em} <b>665.KIRKPINAR - {ad}</b>",
+        f"🕐 {saat} | TUR ESLESMELER\n"
     ]
     for i, (a, b) in enumerate(eslesmeler, 1):
         satirlar.append(
             f"<b>{i}.</b> {a['sporcu']} ({a['il']})\n"
-            f"       ⚔️  VS  ⚔️\n"
+            f"       vs\n"
             f"       {b['sporcu']} ({b['il']})\n"
         )
-    satirlar.append("📊 Kaynak: tggf.com.tr")
+    satirlar.append("Kaynak: tggf.com.tr")
     return "\n".join(satirlar)
 
 
 def sonuc_mesaji(kategori, mesajlar):
     saat = datetime.now(TR).strftime("%H:%M")
     em   = EMOJI.get(kategori, "🤼")
+    ad   = KATEGORI_ADI.get(kategori, kategori)
     baslik = (
-        f"{em} <b>665.KIRKPINAR — {kategori.upper()}</b>\n"
-        f"🕐 {saat} | SONUÇ GÜNCELLEMESİ\n\n"
+        f"{em} <b>665.KIRKPINAR - {ad}</b>\n"
+        f"🕐 {saat} | SONUC GUNCELLEMESI\n\n"
     )
-    return baslik + "\n".join(mesajlar) + "\n\n📊 Kaynak: tggf.com.tr"
+    return baslik + "\n".join(mesajlar) + "\n\nKaynak: tggf.com.tr"
 
 
 def main():
     state = state_yukle()
     saat  = datetime.now(TR).strftime("%H:%M")
-    print(f"[{saat}] Bot başladı...")
+    print(f"[{saat}] Bot basladi...")
 
     for kategori, boy_param in KATEGORILER.items():
         try:
@@ -136,34 +147,31 @@ def main():
                 for s in state.get(kategori, [])
             }
 
-            # ── İLK ÇALIŞMA: Eşleşmeleri gönder ──────────────────
+            # ILK CALISMA: Eslesmeler gonder
             if not state.get(kategori) and yeni:
                 eslesmeler = eslesmeler_olustur(yeni)
                 if eslesmeler:
                     tg(eslesme_mesaji(kategori, eslesmeler))
-                    print(f"[⚔️] {kategori}: eşleşmeler gönderildi")
+                    print(f"[eslesme] {kategori}: {len(eslesmeler)} cift gonderildi")
 
-            # ── SONRAKI ÇALIŞMALAR: Değişimleri gönder ───────────
+            # SONRAKI CALISMA: Degisimleri gonder
             else:
                 mesajlar = []
                 for s in yeni:
                     key  = f"{s['sporcu']}|{s['il']}"
                     eski = eski_map.get(key)
 
-                    # Yeni sporcu eklendiyse
                     if eski is None:
                         mesajlar.append(
-                            f"➕ <b>{s['sporcu']}</b> ({s['il']}) — Eklendi"
+                            f"➕ <b>{s['sporcu']}</b> ({s['il']}) - Eklendi"
                         )
-                    # Sonuç değiştiyse
                     elif s["sonuc"] and s["sonuc"] != eski.get("sonuc", ""):
-                        em  = "✅" if s["sonuc"] in ["G", "GALİP", "1", "W"] else "❌"
+                        em2 = "✅" if s["sonuc"] in ["G", "GALIP", "1", "W"] else "❌"
                         tur = f" | Tur: {s['tur']}" if s["tur"] else ""
                         mesajlar.append(
-                            f"{em} <b>{s['sporcu']}</b> ({s['il']}) "
+                            f"{em2} <b>{s['sporcu']}</b> ({s['il']}) "
                             f"→ {s['sonuc']}{tur}"
                         )
-                    # Tur değiştiyse (yeni tura geçti)
                     elif s["tur"] and s["tur"] != eski.get("tur", ""):
                         mesajlar.append(
                             f"🔄 <b>{s['sporcu']}</b> ({s['il']}) "
@@ -172,9 +180,9 @@ def main():
 
                 if mesajlar:
                     tg(sonuc_mesaji(kategori, mesajlar))
-                    print(f"[✓] {kategori}: {len(mesajlar)} güncelleme gönderildi")
+                    print(f"[guncelleme] {kategori}: {len(mesajlar)} degisim")
                 else:
-                    print(f"[-] {kategori}: değişim yok")
+                    print(f"[-] {kategori}: degisim yok")
 
             state[kategori] = yeni
 
@@ -184,7 +192,7 @@ def main():
         time.sleep(1)
 
     state_kaydet(state)
-    print(f"[{datetime.now(TR).strftime('%H:%M')}] Tamamlandı.")
+    print(f"[{datetime.now(TR).strftime('%H:%M')}] Tamamlandi.")
 
 
 if __name__ == "__main__":
