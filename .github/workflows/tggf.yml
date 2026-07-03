@@ -2,7 +2,7 @@ name: KIRKPINAR Bot
 
 on:
   schedule:
-    - cron: "*/2 * * * *"
+    - cron: "*/5 * * * *"
   workflow_dispatch:
 
 jobs:
@@ -14,7 +14,7 @@ jobs:
       - uses: actions/cache@v4
         with:
           path: tggf_state.json
-          key: state-${{ github.run_number }}
+          key: state-${{ github.run_id }}
           restore-keys: state-
 
       - uses: actions/setup-python@v5
@@ -23,4 +23,9 @@ jobs:
 
       - run: pip install requests beautifulsoup4
 
+      # 3 kez çalıştır, araya 90 saniye koy
+      - run: python tggf_bot.py
+      - run: sleep 90
+      - run: python tggf_bot.py
+      - run: sleep 90
       - run: python tggf_bot.py
