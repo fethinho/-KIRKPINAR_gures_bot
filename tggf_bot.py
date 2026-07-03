@@ -5,9 +5,11 @@ import os
 import time
 from datetime import datetime, timezone, timedelta
 
-BOT_TOKEN = "8185628247:AAGh1gBPwzBaXLTZvU6RRUfXM3xN68eXmdg"
-CHAT_ID   = "-1003562869508"
+BOT_TOKEN  = "8185628247:AAGh1gBPwzBaXLTZvU6RRUfXM3xN68eXmdg"
+CHAT_ID    = "-1003562869508"
 STATE_FILE = "tggf_state.json"
+
+TR = timezone(timedelta(hours=3))
 
 KATEGORILER = {
     "Baş Boyu":   "VFZSUlBRPT0=",
@@ -23,9 +25,13 @@ EMOJI = {
 
 BASE = "https://tggf.com.tr/index.php?cat=website&subcat=sporcu-sonucesleme&edit=VFhwRk1RPT0="
 
+
 def sayfa_cek(boy):
-    r = requests.get(f"{BASE}&boy={boy}",
-                     headers={"User-Agent": "Mozilla/5.0"}, timeout=15)
+    r = requests.get(
+        f"{BASE}&boy={boy}",
+        headers={"User-Agent": "Mozilla/5.0"},
+        timeout=15
+    )
     soup = BeautifulSoup(r.text, "html.parser")
     tablo = soup.find("table")
     if not tablo:
@@ -43,12 +49,18 @@ def sayfa_cek(boy):
         })
     return satirlar
 
+
 def tg(mesaj):
     requests.post(
         f"https://api.telegram.org/bot{BOT_TOKEN}/sendMessage",
-        data={"chat_id": CHAT_ID, "text": mesaj, "parse_mode": "HTML"},
+        data={
+            "chat_id":    CHAT_ID,
+            "text":       mesaj,
+            "parse_mode": "HTML"
+        },
         timeout=10
     )
+
 
 def state_yukle():
     if os.path.exists(STATE_FILE):
@@ -56,46 +68,62 @@ def state_yukle():
             return json.load(f)
     return {}
 
+
 def state_kaydet(s):
     with open(STATE_FILE, "w", encoding="utf-8") as f:
         json.dump(s, f, ensure_ascii=False, indent=2)
 
+
 def main():
     state = state_yukle()
-    TR = timezone(timedelta(hours=3))
-    saat = datetime.now(TR).strftime("%H:%M")
+    saat  = datetime.now(TR).strftime("%H:%M")
 
     for kategori, boy_param in KATEGORILER.items():
         try:
-            yeni = sayfa_cek(boy_param)
-            eski_map = {f"{s['sporcu']}|{s['il']}": s
-                        for s in state.get(kategori, [])}
+            yeni     = sayfa_cek(boy_param)
+            eski_map = {
+                f"{s['sporcu']}|{s['il']}": s
+                for s in state.get(kategori, [])
+            }
             mesajlar = []
 
             for s in yeni:
-                key = f"{s['sporcu']}|{s['il']}"
+                key  = f"{s['sporcu']}|{s['il']}"
                 eski = eski_map.get(key)
-                if not eski and state.get(kategori):  # state doluysa yeni ekleme say
-                mesajlar.append(f"➕ <b>{s['sporcu']}</b> ({s['il']}) — Eklendi")
-                elif s["sonuc"] and s["sonuc"] != eski["sonuc"]:
-                    em = "✅" if s["sonuc"] in ["G","GALİP","1","W"] else "❌"
+
+                # Yeni sporcu — sadece state doluysa bildir
+                if eski is None and state.get(kategori):
+                    mesajlar.append(
+                        f"➕ <b>{s['sporcu']}</b> ({s['il']}) — Eklendi"
+                    )
+                # Sonuç değişimi
+                elif eski is not None and s["sonuc"] and s["sonuc"] != eski["sonuc"]:
+                    em  = "✅" if s["sonuc"] in ["G", "GALİP", "1", "W"] else "❌"
                     tur = f" | Tur:{s['tur']}" if s["tur"] else ""
                     mesajlar.append(
                         f"{em} <b>{s['sporcu']}</b> ({s['il']}) → {s['sonuc']}{tur}"
                     )
 
             if mesajlar:
-                baslik = f"{EMOJI[kategori]} <b>665.KIRKPINAR — {kategori.upper()}</b>\n🕐 {saat}\n\n"
+                baslik = (
+                    f"{EMOJI[kategori]} <b>665.KIRKPINAR — "
+                    f"{kategori.upper()}</b>\n🕐 {saat}\n\n"
+                )
                 tg(baslik + "\n".join(mesajlar))
                 print(f"[✓] {kategori}: {len(mesajlar)} güncelleme")
+            else:
+                print(f"[-] {kategori}: değişim yok")
 
             state[kategori] = yeni
+
         except Exception as e:
             print(f"[HATA] {kategori}: {e}")
+
         time.sleep(1)
 
     state_kaydet(state)
     print(f"[{saat}] Tamamlandı.")
+
 
 if __name__ == "__main__":
     main()
