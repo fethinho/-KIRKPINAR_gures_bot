@@ -57,24 +57,18 @@ def sayfa_cek(boy):
     return satirlar
 
 
+def galip_mi(sonuc_text):
+    s = sonuc_text.upper().strip()
+    return "GAL" in s or s == "G" or s == "1" or s == "W"
+
+
 def eslesmeler_olustur(satirlar):
-    """
-    Sayfadaki HTML satir rengi: mavi=cift sira, sari=tek sira.
-    Asil kural: kura numaralari ardisik cifti olusturur.
-    01+02=eslesme, 03+04=eslesme, 05+06=eslesme...
-    Sadece sira numarasi olan (X olmayan) sporcular eslesir.
-    """
-    # Sadece sira numarasi olan sporuclari al
     sirali = []
     for s in satirlar:
         sira = s.get("sira", "").strip()
         if sira and sira != "--" and sira != "-" and sira.isdigit():
             sirali.append(s)
-
-    # Sira numarasina gore sirala
     sirali.sort(key=lambda x: int(x["sira"]))
-
-    # Ardisik ikili grupla: 1-2, 3-4, 5-6...
     eslesmeler = []
     for i in range(0, len(sirali) - 1, 2):
         eslesmeler.append((sirali[i], sirali[i + 1]))
@@ -107,78 +101,64 @@ def state_kaydet(s):
 
 def eslesme_mesaji(kategori, eslesmeler):
     saat = datetime.now(TR).strftime("%H:%M")
-    em   = EMOJI.get(kategori, "🤼")
-    ad   = KATEGORI_ADI.get(kategori, kategori)
-    satirlar = [
+    em = EMOJI.get(kategori, "🤼")
+    ad = KATEGORI_ADI.get(kategori, kategori)
+    lines = [
         f"{em} <b>665.KIRKPINAR - {ad}</b>",
         f"🕐 {saat} | TUR ESLESMELER\n"
     ]
     for i, (a, b) in enumerate(eslesmeler, 1):
-        satirlar.append(
-            f"<b>{i}.</b> {a['sporcu']} ({a['il']})\n"
-            f"       vs\n"
-            f"       {b['sporcu']} ({b['il']})\n"
-        )
-    satirlar.append("Kaynak: tggf.com.tr")
-    return "\n".join(satirlar)
+        lines.append(f"<b>{i}.</b> {a['sporcu']} ({a['il']})")
+        lines.append(f"       ⚔️ VS ⚔️")
+        lines.append(f"       {b['sporcu']} ({b['il']})\n")
+    lines.append("📊 Kaynak: tggf.com.tr")
+    return "\n".join(lines)
 
 
 def sonuc_mesaji(kategori, mesajlar):
     saat = datetime.now(TR).strftime("%H:%M")
-    em   = EMOJI.get(kategori, "🤼")
-    ad   = KATEGORI_ADI.get(kategori, kategori)
-    baslik = (
-        f"{em} <b>665.KIRKPINAR - {ad}</b>\n"
-        f"🕐 {saat} | SONUC GUNCELLEMESI\n\n"
-    )
-    return baslik + "\n".join(mesajlar) + "\n\nKaynak: tggf.com.tr"
+    em = EMOJI.get(kategori, "🤼")
+    ad = KATEGORI_ADI.get(kategori, kategori)
+    baslik = f"{em} <b>665.KIRKPINAR - {ad}</b>\n🕐 {saat} | SONUC\n\n"
+    return baslik + "\n".join(mesajlar) + "\n\n📊 Kaynak: tggf.com.tr"
 
 
 def main():
     state = state_yukle()
-    saat  = datetime.now(TR).strftime("%H:%M")
+    saat = datetime.now(TR).strftime("%H:%M")
     print(f"[{saat}] Bot basladi...")
 
     for kategori, boy_param in KATEGORILER.items():
         try:
-            yeni     = sayfa_cek(boy_param)
+            yeni = sayfa_cek(boy_param)
             eski_map = {
                 f"{s['sporcu']}|{s['il']}": s
                 for s in state.get(kategori, [])
             }
 
-            # ILK CALISMA: Eslesmeler gonder
             if not state.get(kategori) and yeni:
                 eslesmeler = eslesmeler_olustur(yeni)
                 if eslesmeler:
                     tg(eslesme_mesaji(kategori, eslesmeler))
-                    print(f"[eslesme] {kategori}: {len(eslesmeler)} cift gonderildi")
-
-            # SONRAKI CALISMA: Degisimleri gonder
+                    print(f"[eslesme] {kategori}: {len(eslesmeler)} cift")
             else:
                 mesajlar = []
                 for s in yeni:
-                    key  = f"{s['sporcu']}|{s['il']}"
+                    key = f"{s['sporcu']}|{s['il']}"
                     eski = eski_map.get(key)
-
                     if eski is None:
-                        mesajlar.append(
-                            f"➕ <b>{s['sporcu']}</b> ({s['il']}) - Eklendi"
-                        )
+                        mesajlar.append(f"➕ <b>{s['sporcu']}</b> ({s['il']}) - Eklendi")
                     elif s["sonuc"] and s["sonuc"] != eski.get("sonuc", ""):
-                       sonuc_upper = s["sonuc"].upper().strip()
-                        em2 = "✅" if any(x in sonuc_upper for x in ["GAL", "G", "1", "W"]) else "❌"
+                        if galip_mi(s["sonuc"]):
+                            em2 = "✅"
+                            durum = "GALIP"
+                        else:
+                            em2 = "❌"
+                            durum = "MAGUP"
                         tur = f" | Tur: {s['tur']}" if s["tur"] else ""
-                        mesajlar.append(
-                            f"{em2} <b>{s['sporcu']}</b> ({s['il']}) "
-                            f"→ {s['sonuc']}{tur}"
-                        )
+                        mesajlar.append(f"{em2} <b>{s['sporcu']}</b> ({s['il']}) - {durum}{tur}")
                     elif s["tur"] and s["tur"] != eski.get("tur", ""):
-                        durum = "GALİP" if "✅" in em2 else "MAĞLUP"
-mesajlar.append(
-    f"{em2} <b>{s['sporcu']}</b> ({s['il']}) — {durum}{tur}"
-
-                        )
+                        mesajlar.append(f"🔄 <b>{s['sporcu']}</b> ({s['il']}) - {s['tur']}. TUR")
 
                 if mesajlar:
                     tg(sonuc_mesaji(kategori, mesajlar))
