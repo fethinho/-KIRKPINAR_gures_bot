@@ -2,6 +2,7 @@ import requests
 from bs4 import BeautifulSoup
 import json
 import os
+import subprocess
 import time
 import re
 from datetime import datetime, timezone, timedelta
@@ -30,32 +31,27 @@ BASE = "https://tggf.com.tr/index.php?cat=website&subcat=sporcu-sonucesleme&edit
 
 # -------------------------------------------------------------------
 def tur_no_bul(metin):
-    """Metinden tur numarasini cikar. '( 2 TUR)', '( 3 TUR)' gibi formatlari yakalar."""
     m = re.search(r'(\d+)\s*TUR', metin, re.IGNORECASE)
     if m:
         return int(m.group(1))
     return None
 
 def sayfa_cek(boy):
-    """Sadece EN UST tabloyu oku ve tur_no ile satirlari dondur."""
     r = requests.get(
         f"{BASE}&boy={boy}",
         headers={"User-Agent": "Mozilla/5.0"},
         timeout=15
     )
     soup = BeautifulSoup(r.text, "html.parser")
-
     tablo = soup.find("table")
     if not tablo:
         return None
-
     tur_no = 1
     for th in tablo.find_all("th"):
         n = tur_no_bul(th.get_text())
         if n:
             tur_no = n
             break
-
     satirlar = []
     for tr in tablo.find_all("tr")[1:]:
         td = tr.find_all("td")
@@ -66,18 +62,12 @@ def sayfa_cek(boy):
         sonuc  = td[4].get_text(strip=True) if len(td) > 4 else ""
         if not sporcu or sporcu in ("-", "--"):
             continue
-        satirlar.append({
-            "sporcu": sporcu,
-            "il":     il,
-            "sonuc":  sonuc,
-            "tur_no": tur_no,
-        })
+        satirlar.append({"sporcu": sporcu, "il": il, "sonuc": sonuc, "tur_no": tur_no})
     return {"tur_no": tur_no, "satirlar": satirlar}
 
-# -------------------------------------------------------------------
 def durum_belirle(sonuc):
     s = sonuc.upper().strip()
-    if not s or s in ("-", "--", ""):
+    if not s or s in ("-", "--"):
         return "bekliyor"
     if "GAL" in s or s in ("G", "G#", "1", "W"):
         return "galip"
@@ -103,9 +93,22 @@ def state_yukle():
 def state_kaydet(s):
     with open(STATE_FILE, "w", encoding="utf-8") as f:
         json.dump(s, f, ensure_ascii=False, indent=2)
+    # Git ile repoya commit et
+    try:
+        subprocess.run(["git", "config", "user.email", "bot@kirkpinar.local"], check=True)
+        subprocess.run(["git", "config", "user.name", "KIRKPINAR Bot"], check=True)
+        subprocess.run(["git", "add", STATE_FILE], check=True)
+        result = subprocess.run(["git", "diff", "--cached", "--quiet"])
+        if result.returncode != 0:  # degisiklik varsa
+            subprocess.run(["git", "commit", "-m", "state: guncellendi [skip ci]"], check=True)
+            subprocess.run(["git", "push"], check=True)
+            print("[STATE] Repoya push edildi")
+        else:
+            print("[STATE] Degisiklik yok, push yapilmadi")
+    except Exception as e:
+        print(f"[STATE HATA] {e}")
 
 def eslesme_mesaji(kategori, tur_no, satirlar):
-    """Yeni tur basladinda eslesme listesi gonder."""
     saat = datetime.now(TR).strftime("%H:%M")
     em   = EMOJI.get(kategori, "\U0001f93c")
     ad   = KATEGORI_ADI.get(kategori, kategori)
@@ -113,7 +116,6 @@ def eslesme_mesaji(kategori, tur_no, satirlar):
         f"{em} <b>665.KIRKPINAR - {ad}</b>",
         f"\U0001f550 {saat} | {tur_no}. TUR ESLESMELER\n",
     ]
-    # Ciftleri kura sirasi ile olustur (1-2, 3-4, ...)
     ciftler = [satirlar[i:i+2] for i in range(0, len(satirlar)-1, 2)]
     for i, cift in enumerate(ciftler, 1):
         a = cift[0]
@@ -126,7 +128,6 @@ def eslesme_mesaji(kategori, tur_no, satirlar):
     return "\n".join(lines)
 
 def yeni_tur_listesi_mesaji(kategori, tur_no, satirlar):
-    """Yeni tura gecildiginde o turdaki sporcu listesi."""
     saat = datetime.now(TR).strftime("%H:%M")
     em   = EMOJI.get(kategori, "\U0001f93c")
     ad   = KATEGORI_ADI.get(kategori, kategori)
@@ -139,17 +140,16 @@ def yeni_tur_listesi_mesaji(kategori, tur_no, satirlar):
     lines.append(f"\n\U0001f4ca Kaynak: tggf.com.tr")
     return "\n".join(lines)
 
-def sonuc_guncelleme_mesaji(kategori, tur_no, galip_satirlar):
-    """Tur icinde gelen galip guncellemeleri."""
+def galip_mesaji(kategori, tur_no, galip_satirlar):
     saat = datetime.now(TR).strftime("%H:%M")
     em   = EMOJI.get(kategori, "\U0001f93c")
     ad   = KATEGORI_ADI.get(kategori, kategori)
     lines = [
         f"{em} <b>665.KIRKPINAR - {ad}</b>",
-        f"\U0001f550 {saat} | {tur_no}. TUR - YENİ GALİPLER\n",
+        f"\U0001f550 {saat} | {tur_no}. TUR - YEN\u0130 GAL\u0130PLER\n",
     ]
     for s in galip_satirlar:
-        lines.append(f"\u2705 <b>{s['sporcu']}</b> ({s['il']}) - GALİP")
+        lines.append(f"\u2705 <b>{s['sporcu']}</b> ({s['il']}) - GAL\u0130P")
     lines.append(f"\n\U0001f4ca Kaynak: tggf.com.tr")
     return "\n".join(lines)
 
@@ -157,7 +157,8 @@ def sonuc_guncelleme_mesaji(kategori, tur_no, galip_satirlar):
 def main():
     state = state_yukle()
     saat  = datetime.now(TR).strftime("%H:%M")
-    print(f"[{saat}] Bot basladi...")
+    print(f"[{saat}] Bot basladi... state keys: {list(state.keys())}")
+    degisti = False
 
     for kategori, boy_param in KATEGORILER.items():
         try:
@@ -166,50 +167,38 @@ def main():
                 print(f"[-] {kategori}: veri yok")
                 continue
 
-            tur_no  = veri["tur_no"]
+            tur_no   = veri["tur_no"]
             satirlar = veri["satirlar"]
             tur_key  = f"{kategori}__tur"
             eski_tur = state.get(tur_key + "_no", 0)
-            eski_sporcu_map = {s["sporcu"]: s for s in state.get(tur_key + "_list", [])}
+            eski_map = {s["sporcu"]: s for s in state.get(tur_key + "_list", [])}
 
             print(f"[kontrol] {kategori}: sayfa_tur={tur_no}, state_tur={eski_tur}, sporcu={len(satirlar)}")
 
             if tur_no != eski_tur:
-                # --- YENİ TUR BAŞLADI ---
-                print(f"[YENİ TUR] {kategori}: {eski_tur} -> {tur_no}")
-
-                # 1) Eslesme mesaji (sadece tur 2 ve sonrasi icin, tur 1 eslesme zaten ilk gonderildi)
+                print(f"[YEN\u0130 TUR] {kategori}: {eski_tur} -> {tur_no}")
                 tg(eslesme_mesaji(kategori, tur_no, satirlar))
                 print(f"[eslesme] {kategori} Tur{tur_no}: {len(satirlar)//2} cift")
-
-                # 2) Sporcu listesi (X. TURA KALANLAR)
                 tg(yeni_tur_listesi_mesaji(kategori, tur_no, satirlar))
                 print(f"[liste] {kategori} Tur{tur_no}: {len(satirlar)} sporcu")
-
-                # State guncelle
                 state[tur_key + "_no"]   = tur_no
                 state[tur_key + "_list"] = satirlar
-
+                degisti = True
             else:
-                # --- AYNI TUR, YENİ GALİP KONTROLÜ ---
                 yeni_galipler = []
                 for s in satirlar:
-                    sporcu = s["sporcu"]
                     yeni_d = durum_belirle(s["sonuc"])
-                    eski_s = eski_sporcu_map.get(sporcu)
+                    eski_s = eski_map.get(s["sporcu"])
                     eski_d = durum_belirle(eski_s["sonuc"]) if eski_s else "bekliyor"
-
                     if yeni_d == "galip" and eski_d != "galip":
                         yeni_galipler.append(s)
-                        print(f"  yeni galip: {sporcu}")
-
+                        print(f"  yeni galip: {s['sporcu']}")
                 if yeni_galipler:
-                    tg(sonuc_guncelleme_mesaji(kategori, tur_no, yeni_galipler))
-                    print(f"[guncelleme] {kategori} Tur{tur_no}: {len(yeni_galipler)} yeni galip")
+                    tg(galip_mesaji(kategori, tur_no, yeni_galipler))
+                    print(f"[galip] {kategori} Tur{tur_no}: {len(yeni_galipler)} yeni")
+                    degisti = True
                 else:
                     print(f"[-] {kategori} Tur{tur_no}: degisim yok")
-
-                # State guncelle (sadece liste)
                 state[tur_key + "_list"] = satirlar
 
         except Exception as e:
