@@ -6,6 +6,8 @@ on:
   workflow_dispatch:
   push:
     branches: [main]
+    paths-ignore:
+      - 'tggf_state.json'
 
 concurrency:
   group: kirkpinar-bot
@@ -14,14 +16,12 @@ concurrency:
 jobs:
   bot:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     steps:
       - uses: actions/checkout@v4
-
-      - uses: actions/cache@v4
         with:
-          path: tggf_state.json
-          key: tggf-state-${{ github.run_id }}
-          restore-keys: tggf-state-
+          token: ${{ secrets.GITHUB_TOKEN }}
 
       - uses: actions/setup-python@v5
         with:
