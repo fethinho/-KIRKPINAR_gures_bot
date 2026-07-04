@@ -2,10 +2,14 @@ name: KIRKPINAR Bot
 
 on:
   schedule:
-    - cron: "*/30 * * * *" # Her 30 dakikada bir
+    - cron: "*/30 * * * *"
   workflow_dispatch:
   push:
     branches: [main]
+
+concurrency:
+  group: kirkpinar-bot
+  cancel-in-progress: false
 
 jobs:
   bot:
