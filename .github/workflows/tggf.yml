@@ -2,7 +2,7 @@ name: KIRKPINAR Bot
 
 on:
   schedule:
-    - cron: "*/5 * * * *"
+    - cron: "*/30 * * * *" # Her 30 dakikada bir
   workflow_dispatch:
   push:
     branches: [main]
@@ -26,7 +26,13 @@ jobs:
       - run: pip install requests beautifulsoup4
 
       - run: python tggf_bot.py
-      - run: sleep 90
+      - run: sleep 300
       - run: python tggf_bot.py
-      - run: sleep 90
+      - run: sleep 300
+      - run: python tggf_bot.py
+      - run: sleep 300
+      - run: python tggf_bot.py
+      - run: sleep 300
+      - run: python tggf_bot.py
+      - run: sleep 300
       - run: python tggf_bot.py
