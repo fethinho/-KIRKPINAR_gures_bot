@@ -64,7 +64,7 @@
     {
       "sporcu": "ORHAN OKULU",
       "il": "ANKARA",
-      "sonuc": "",
+      "sonuc": "GALİP",
       "tur_no": 3
     },
     {
@@ -94,107 +94,59 @@
     {
       "sporcu": "SERDAR YILDIRIM",
       "il": "SAKARYA",
-      "sonuc": "",
+      "sonuc": "GALİP",
       "tur_no": 3
     }
   ],
-  "BasAlti__tur_no": 3,
+  "BasAlti__tur_no": 1,
   "BasAlti__tur_list": [
     {
-      "sporcu": "OKTAY GÜNGÖR",
-      "il": "BALIKESİR",
-      "sonuc": "GALİP",
-      "tur_no": 3
-    },
-    {
-      "sporcu": "AHMET HAN YILDIZ",
+      "sporcu": "NECİP AL",
       "il": "BALIKESİR",
       "sonuc": "",
-      "tur_no": 3
-    },
-    {
-      "sporcu": "YUNUS EMRE AKMAN",
-      "il": "KOCAELİ",
-      "sonuc": "",
-      "tur_no": 3
-    },
-    {
-      "sporcu": "KEREM KAHYA",
-      "il": "KOCAELİ",
-      "sonuc": "GALİP",
-      "tur_no": 3
-    },
-    {
-      "sporcu": "İMRAN VARDİ",
-      "il": "ANTALYA",
-      "sonuc": "GALİP",
-      "tur_no": 3
-    },
-    {
-      "sporcu": "BATUHAN GÜZEL",
-      "il": "BALIKESİR",
-      "sonuc": "",
-      "tur_no": 3
-    },
-    {
-      "sporcu": "SİNAN YILDIZ",
-      "il": "KOCAELİ",
-      "sonuc": "GALİP",
-      "tur_no": 3
-    },
-    {
-      "sporcu": "SAMET OCAK",
-      "il": "ANTALYA",
-      "sonuc": "",
-      "tur_no": 3
-    },
-    {
-      "sporcu": "MEVLÜT KÖKEN",
-      "il": "ANTALYA",
-      "sonuc": "",
-      "tur_no": 3
-    },
-    {
-      "sporcu": "İLHAN KIRMIZIKAN",
-      "il": "ANTALYA",
-      "sonuc": "GALİP",
-      "tur_no": 3
-    },
-    {
-      "sporcu": "ÖMER YASİR GÖKKAYA",
-      "il": "ANTALYA",
-      "sonuc": "",
-      "tur_no": 3
+      "tur_no": 1
     },
     {
       "sporcu": "BEKİR CAN ÖZTURGUT",
       "il": "BURSA",
       "sonuc": "",
-      "tur_no": 3
+      "tur_no": 1
+    },
+    {
+      "sporcu": "OKTAY GÜNGÖR",
+      "il": "BALIKESİR",
+      "sonuc": "",
+      "tur_no": 1
+    },
+    {
+      "sporcu": "SİNAN YILDIZ",
+      "il": "KOCAELİ",
+      "sonuc": "",
+      "tur_no": 1
+    },
+    {
+      "sporcu": "İMRAN VARDİ",
+      "il": "ANTALYA",
+      "sonuc": "",
+      "tur_no": 1
+    },
+    {
+      "sporcu": "KEREM KAHYA",
+      "il": "KOCAELİ",
+      "sonuc": "",
+      "tur_no": 1
+    },
+    {
+      "sporcu": "İLHAN KIRMIZIKAN",
+      "il": "ANTALYA",
+      "sonuc": "",
+      "tur_no": 1
     },
     {
       "sporcu": "YUSUF İSLAM TAŞ",
       "il": "ANTALYA",
-      "sonuc": "GALİP",
-      "tur_no": 3
-    },
-    {
-      "sporcu": "MEHMET KIRAT",
-      "il": "ANKARA",
       "sonuc": "",
-      "tur_no": 3
-    },
-    {
-      "sporcu": "NECİP AL",
-      "il": "BALIKESİR",
-      "sonuc": "GALİP",
-      "tur_no": 3
-    },
-    {
-      "sporcu": "BURAK ŞAHİN",
-      "il": "İSTANBUL",
-      "sonuc": "",
-      "tur_no": 3
+      "tur_no": 1
     }
   ],
   "Buyuk Orta__tur_no": 1,
