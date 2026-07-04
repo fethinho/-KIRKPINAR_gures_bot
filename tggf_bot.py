@@ -29,6 +29,13 @@ KATEGORI_ADI = {
 BASE = "https://tggf.com.tr/index.php?cat=website&subcat=sporcu-sonucesleme&edit=VFhwRk1RPT0="
 
 # -------------------------------------------------------------------
+def tur_no_bul(metin):
+    """Herhangi bir metinden tur numarasini cikar. '( 2 TUR)' gibi formatlari yakalar."""
+    m = re.search(r'(\d+)\s*TUR', metin, re.IGNORECASE)
+    if m:
+        return int(m.group(1))
+    return None
+
 def sayfa_cek(boy):
     """Sayfadaki TUM turlarin tablolarini cek.
     Her tur icin { 'tur_no': int, 'satirlar': [...] } donduruyor.
@@ -41,25 +48,27 @@ def sayfa_cek(boy):
     soup = BeautifulSoup(r.text, "html.parser")
 
     sonuc = []
-    # Her tablo oncekilerin tur basligini <th> veya tablonun ustundeki
-    # div/p/h icinde tasir; basit yaklasim: tablolari sirayla bul,
-    # her tablonun onceki kardes elementinde tur numarasini ara
     tablolar = soup.find_all("table")
     for tablo in tablolar:
-        # Tur numarasini tablonun yakin cevresinden bul
-        tur_no = 1
-        # Tablo basligindaki <th> satirina bak
-        tur_th = tablo.find("th")
-        if tur_th:
-            m = re.search(r"(\d+)\s*TUR", tur_th.get_text(), re.IGNORECASE)
-            if m:
-                tur_no = int(m.group(1))
-        # Tablonun onceki elementlerine de bak
-        prev = tablo.find_previous(string=re.compile(r"\d+\s*TUR", re.IGNORECASE))
-        if prev:
-            m = re.search(r"(\d+)\s*TUR", prev, re.IGNORECASE)
-            if m:
-                tur_no = int(m.group(1))
+        tur_no = 1  # varsayilan
+
+        # Tum th elementlerinin metninde tur numarasini ara
+        for th in tablo.find_all("th"):
+            n = tur_no_bul(th.get_text())
+            if n:
+                tur_no = n
+                break
+
+        # Tablonun onceki kardes/ata elementlerinde de ara
+        if tur_no == 1:
+            for prev in tablo.find_all_previous(string=True):
+                metin = prev.strip()
+                if not metin:
+                    continue
+                n = tur_no_bul(metin)
+                if n:
+                    tur_no = n
+                    break
 
         satirlar = []
         for tr in tablo.find_all("tr")[1:]:
@@ -106,10 +115,7 @@ def sporcu_satir_formatla(s):
     return None
 
 def eslesmeler_olustur(satirlar):
-    # Kura siralamasi ile cift olustur
-    gecerli = [s for s in satirlar
-               if s.get("sira", "").strip().isdigit() or
-                  s.get("kura", "").strip().replace("T","").isdigit()]
+    gecerli = [s for s in satirlar if s.get("sira", "").strip().isdigit() or s.get("kura", "").strip().replace("T","").isdigit()]
     try:
         gecerli.sort(key=lambda x: int(x["kura"].replace("T","")) if x["kura"].replace("T","").isdigit() else 9999)
     except Exception:
@@ -175,15 +181,15 @@ def main():
                 print(f"[-] {kategori}: veri yok")
                 continue
 
-            # Her tur tablosunu ayri isle
             for tur_data in tur_tablolar:
-                tur_no   = tur_data["tur_no"]
+                tur_no  = tur_data["tur_no"]
                 satirlar = tur_data["satirlar"]
                 tur_key  = f"{kategori}__tur{tur_no}"
-
                 eski_list = state.get(tur_key, [])
                 eski_map  = {f"{s['sporcu']}|{s['il']}": s for s in eski_list}
-                ilk       = (len(eski_list) == 0)
+                ilk = (len(eski_list) == 0)
+
+                print(f"[kontrol] {kategori} Tur{tur_no}: sayfa={len(satirlar)} sporcu, state={len(eski_list)}")
 
                 if ilk:
                     # Yeni tur - eslesme mesaji gonder
@@ -211,8 +217,7 @@ def main():
                         yeni_sonuc = s.get("sonuc","").strip()
                         yeni_tur   = s.get("tur","").strip()
                         eski_sonuc = eski.get("sonuc","").strip() if eski else ""
-                        eski_tur   = eski.get("tur","").strip()   if eski else ""
-
+                        eski_tur   = eski.get("tur","").strip() if eski else ""
                         if yeni_sonuc != eski_sonuc or yeni_tur != eski_tur:
                             d = durum_belirle(yeni_sonuc, yeni_tur)
                             if d != "bekliyor":
@@ -220,7 +225,6 @@ def main():
                                 if satir:
                                     mesajlar.append(satir)
                                     print(f"  degisim: {s['sporcu']} | {eski_sonuc}->{yeni_sonuc}")
-
                     if mesajlar:
                         tg(sonuc_mesaji(kategori, tur_no, mesajlar))
                         print(f"[guncelleme] {kategori} Tur{tur_no}: {len(mesajlar)} degisim")
@@ -228,9 +232,10 @@ def main():
                         print(f"[-] {kategori} Tur{tur_no}: degisim yok")
 
                 state[tur_key] = satirlar
-
         except Exception as e:
+            import traceback
             print(f"[HATA] {kategori}: {e}")
+            traceback.print_exc()
         time.sleep(1)
 
     state_kaydet(state)
