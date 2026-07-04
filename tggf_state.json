@@ -8,13 +8,43 @@
       "tur_no": 3
     },
     {
+      "sporcu": "FURKAN DURMUŞ ALTIN",
+      "il": "ANKARA",
+      "sonuc": "",
+      "tur_no": 3
+    },
+    {
       "sporcu": "ENES DOĞAN",
       "il": "BALIKESİR",
       "sonuc": "",
       "tur_no": 3
     },
     {
+      "sporcu": "OSMAN KAN",
+      "il": "ANTALYA",
+      "sonuc": "",
+      "tur_no": 3
+    },
+    {
       "sporcu": "ERKAN TAŞ",
+      "il": "ANTALYA",
+      "sonuc": "",
+      "tur_no": 3
+    },
+    {
+      "sporcu": "MEHMET YEŞİL YEŞİL",
+      "il": "BALIKESİR",
+      "sonuc": "",
+      "tur_no": 3
+    },
+    {
+      "sporcu": "ALİ İHSAN BATMAZ",
+      "il": "ANTALYA",
+      "sonuc": "",
+      "tur_no": 3
+    },
+    {
+      "sporcu": "ALİ GÜRBÜZ",
       "il": "ANTALYA",
       "sonuc": "",
       "tur_no": 3
@@ -26,56 +56,20 @@
       "tur_no": 3
     },
     {
+      "sporcu": "YILDIRAY PALA",
+      "il": "İSTANBUL",
+      "sonuc": "",
+      "tur_no": 3
+    },
+    {
       "sporcu": "ORHAN OKULU",
       "il": "ANKARA",
       "sonuc": "",
       "tur_no": 3
     },
     {
-      "sporcu": "YUSUF CAN ZEYBEK",
-      "il": "ANTALYA",
-      "sonuc": "",
-      "tur_no": 3
-    },
-    {
-      "sporcu": "FURKAN DURMUŞ ALTIN",
-      "il": "ANKARA",
-      "sonuc": "",
-      "tur_no": 3
-    },
-    {
-      "sporcu": "MEHMET YEŞİL YEŞİL",
-      "il": "BALIKESİR",
-      "sonuc": "",
-      "tur_no": 3
-    },
-    {
-      "sporcu": "SERDAR YILDIRIM",
-      "il": "SAKARYA",
-      "sonuc": "",
-      "tur_no": 3
-    },
-    {
-      "sporcu": "OSMAN KAN",
-      "il": "ANTALYA",
-      "sonuc": "",
-      "tur_no": 3
-    },
-    {
       "sporcu": "YILDIRAY AKIN",
       "il": "KOCAELİ",
-      "sonuc": "",
-      "tur_no": 3
-    },
-    {
-      "sporcu": "ALİ GÜRBÜZ",
-      "il": "ANTALYA",
-      "sonuc": "",
-      "tur_no": 3
-    },
-    {
-      "sporcu": "YILDIRAY PALA",
-      "il": "İSTANBUL",
       "sonuc": "",
       "tur_no": 3
     },
@@ -92,8 +86,14 @@
       "tur_no": 3
     },
     {
-      "sporcu": "ALİ İHSAN BATMAZ",
+      "sporcu": "YUSUF CAN ZEYBEK",
       "il": "ANTALYA",
+      "sonuc": "",
+      "tur_no": 3
+    },
+    {
+      "sporcu": "SERDAR YILDIRIM",
+      "il": "SAKARYA",
       "sonuc": "",
       "tur_no": 3
     }
@@ -232,7 +232,7 @@
     {
       "sporcu": "MURAT ÖZKAPLAN",
       "il": "KOCAELİ",
-      "sonuc": "G#",
+      "sonuc": "GALİP",
       "tur_no": 3
     },
     {
@@ -292,7 +292,7 @@
     {
       "sporcu": "SELÇUK KILIÇARSLAN",
       "il": "YALOVA",
-      "sonuc": "G#",
+      "sonuc": "GALİP",
       "tur_no": 3
     }
   ]
