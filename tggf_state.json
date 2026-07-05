@@ -2,13 +2,7 @@
   "Bas Boyu__tur_no": 1,
   "Bas Boyu__tur_list": [
     {
-      "sporcu": "FEYZULLAH AKTÜRK",
-      "il": "ANKARA",
-      "sonuc": "",
-      "tur_no": 1
-    },
-    {
-      "sporcu": "MUSTAFA TAŞ",
+      "sporcu": "ERKAN TAŞ",
       "il": "ANTALYA",
       "sonuc": "",
       "tur_no": 1
@@ -20,8 +14,14 @@
       "tur_no": 1
     },
     {
-      "sporcu": "ERKAN TAŞ",
+      "sporcu": "MUSTAFA TAŞ",
       "il": "ANTALYA",
+      "sonuc": "",
+      "tur_no": 1
+    },
+    {
+      "sporcu": "FEYZULLAH AKTÜRK",
+      "il": "ANKARA",
       "sonuc": "",
       "tur_no": 1
     }
@@ -56,26 +56,14 @@
   "Buyuk Orta__tur_no": 1,
   "Buyuk Orta__tur_list": [
     {
-      "sporcu": "KUTLUHAN AVŞAR",
-      "il": "BALIKESİR",
-      "sonuc": "",
-      "tur_no": 1
-    },
-    {
       "sporcu": "MUHAMMED ENES ÖZCAN",
       "il": "MUĞLA",
-      "sonuc": "GALİP",
+      "sonuc": "",
       "tur_no": 1
     },
     {
       "sporcu": "ENGİN ATAR",
       "il": "İSTANBUL",
-      "sonuc": "GALİP",
-      "tur_no": 1
-    },
-    {
-      "sporcu": "SELÇUK KILIÇARSLAN",
-      "il": "YALOVA",
       "sonuc": "",
       "tur_no": 1
     }
