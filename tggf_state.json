@@ -29,14 +29,8 @@
   "BasAlti__tur_no": 1,
   "BasAlti__tur_list": [
     {
-      "sporcu": "NECİP AL",
-      "il": "BALIKESİR",
-      "sonuc": "",
-      "tur_no": 1
-    },
-    {
-      "sporcu": "BEKİR CAN ÖZTURGUT",
-      "il": "BURSA",
+      "sporcu": "İMRAN VARDİ",
+      "il": "ANTALYA",
       "sonuc": "",
       "tur_no": 1
     },
@@ -47,8 +41,14 @@
       "tur_no": 1
     },
     {
-      "sporcu": "İMRAN VARDİ",
-      "il": "ANTALYA",
+      "sporcu": "BEKİR CAN ÖZTURGUT",
+      "il": "BURSA",
+      "sonuc": "",
+      "tur_no": 1
+    },
+    {
+      "sporcu": "NECİP AL",
+      "il": "BALIKESİR",
       "sonuc": "",
       "tur_no": 1
     }
