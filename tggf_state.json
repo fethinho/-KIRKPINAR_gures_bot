@@ -2,31 +2,7 @@
   "Bas Boyu__tur_no": 1,
   "Bas Boyu__tur_list": [
     {
-      "sporcu": "SERDAR YILDIRIM",
-      "il": "SAKARYA",
-      "sonuc": "",
-      "tur_no": 1
-    },
-    {
-      "sporcu": "OSMAN KAN",
-      "il": "ANTALYA",
-      "sonuc": "",
-      "tur_no": 1
-    },
-    {
-      "sporcu": "ALİ GÜRBÜZ",
-      "il": "ANTALYA",
-      "sonuc": "",
-      "tur_no": 1
-    },
-    {
       "sporcu": "FEYZULLAH AKTÜRK",
-      "il": "ANKARA",
-      "sonuc": "",
-      "tur_no": 1
-    },
-    {
-      "sporcu": "ORHAN OKULU",
       "il": "ANKARA",
       "sonuc": "",
       "tur_no": 1
@@ -53,20 +29,8 @@
   "BasAlti__tur_no": 1,
   "BasAlti__tur_list": [
     {
-      "sporcu": "OKTAY GÜNGÖR",
+      "sporcu": "NECİP AL",
       "il": "BALIKESİR",
-      "sonuc": "",
-      "tur_no": 1
-    },
-    {
-      "sporcu": "İMRAN VARDİ",
-      "il": "ANTALYA",
-      "sonuc": "",
-      "tur_no": 1
-    },
-    {
-      "sporcu": "KEREM KAHYA",
-      "il": "KOCAELİ",
       "sonuc": "",
       "tur_no": 1
     },
@@ -83,20 +47,8 @@
       "tur_no": 1
     },
     {
-      "sporcu": "YUSUF İSLAM TAŞ",
+      "sporcu": "İMRAN VARDİ",
       "il": "ANTALYA",
-      "sonuc": "",
-      "tur_no": 1
-    },
-    {
-      "sporcu": "İLHAN KIRMIZIKAN",
-      "il": "ANTALYA",
-      "sonuc": "",
-      "tur_no": 1
-    },
-    {
-      "sporcu": "NECİP AL",
-      "il": "BALIKESİR",
       "sonuc": "",
       "tur_no": 1
     }
@@ -104,8 +56,14 @@
   "Buyuk Orta__tur_no": 1,
   "Buyuk Orta__tur_list": [
     {
-      "sporcu": "MURAT ÖZKAPLAN",
-      "il": "KOCAELİ",
+      "sporcu": "KUTLUHAN AVŞAR",
+      "il": "BALIKESİR",
+      "sonuc": "",
+      "tur_no": 1
+    },
+    {
+      "sporcu": "MUHAMMED ENES ÖZCAN",
+      "il": "MUĞLA",
       "sonuc": "",
       "tur_no": 1
     },
@@ -116,38 +74,8 @@
       "tur_no": 1
     },
     {
-      "sporcu": "MEHMET CAN KAYA",
-      "il": "SAMSUN",
-      "sonuc": "",
-      "tur_no": 1
-    },
-    {
       "sporcu": "SELÇUK KILIÇARSLAN",
       "il": "YALOVA",
-      "sonuc": "",
-      "tur_no": 1
-    },
-    {
-      "sporcu": "ATAKAN MAKAS",
-      "il": "EDİRNE",
-      "sonuc": "",
-      "tur_no": 1
-    },
-    {
-      "sporcu": "KUTLUHAN AVŞAR",
-      "il": "BALIKESİR",
-      "sonuc": "GALİP",
-      "tur_no": 1
-    },
-    {
-      "sporcu": "MUHAMMED ENES ÖZCAN",
-      "il": "MUĞLA",
-      "sonuc": "GALİP",
-      "tur_no": 1
-    },
-    {
-      "sporcu": "OĞUZHAN ÖZTÜRK",
-      "il": "ANTALYA",
       "sonuc": "",
       "tur_no": 1
     }
