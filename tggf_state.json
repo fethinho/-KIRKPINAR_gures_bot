@@ -8,18 +8,6 @@
       "tur_no": 1
     },
     {
-      "sporcu": "SEÇKİN DUMAN",
-      "il": "KOCAELİ",
-      "sonuc": "",
-      "tur_no": 1
-    },
-    {
-      "sporcu": "MUSTAFA TAŞ",
-      "il": "ANTALYA",
-      "sonuc": "",
-      "tur_no": 1
-    },
-    {
       "sporcu": "FEYZULLAH AKTÜRK",
       "il": "ANKARA",
       "sonuc": "",
@@ -29,12 +17,6 @@
   "BasAlti__tur_no": 1,
   "BasAlti__tur_list": [
     {
-      "sporcu": "İMRAN VARDİ",
-      "il": "ANTALYA",
-      "sonuc": "",
-      "tur_no": 1
-    },
-    {
       "sporcu": "SİNAN YILDIZ",
       "il": "KOCAELİ",
       "sonuc": "",
@@ -43,12 +25,6 @@
     {
       "sporcu": "BEKİR CAN ÖZTURGUT",
       "il": "BURSA",
-      "sonuc": "",
-      "tur_no": 1
-    },
-    {
-      "sporcu": "NECİP AL",
-      "il": "BALIKESİR",
       "sonuc": "",
       "tur_no": 1
     }
