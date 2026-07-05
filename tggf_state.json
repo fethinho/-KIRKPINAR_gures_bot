@@ -1,126 +1,60 @@
 {
-  "Bas Boyu__tur_no": 3,
+  "Bas Boyu__tur_no": 1,
   "Bas Boyu__tur_list": [
     {
-      "sporcu": "MUSTAFA TAŞ",
-      "il": "ANTALYA",
-      "sonuc": "GALİP",
-      "tur_no": 3
-    },
-    {
-      "sporcu": "FURKAN DURMUŞ ALTIN",
-      "il": "ANKARA",
+      "sporcu": "SERDAR YILDIRIM",
+      "il": "SAKARYA",
       "sonuc": "",
-      "tur_no": 3
-    },
-    {
-      "sporcu": "ENES DOĞAN",
-      "il": "BALIKESİR",
-      "sonuc": "",
-      "tur_no": 3
+      "tur_no": 1
     },
     {
       "sporcu": "OSMAN KAN",
       "il": "ANTALYA",
-      "sonuc": "GALİP",
-      "tur_no": 3
-    },
-    {
-      "sporcu": "ERKAN TAŞ",
-      "il": "ANTALYA",
-      "sonuc": "GALİP",
-      "tur_no": 3
-    },
-    {
-      "sporcu": "MEHMET YEŞİL YEŞİL",
-      "il": "BALIKESİR",
       "sonuc": "",
-      "tur_no": 3
-    },
-    {
-      "sporcu": "ALİ İHSAN BATMAZ",
-      "il": "ANTALYA",
-      "sonuc": "",
-      "tur_no": 3
+      "tur_no": 1
     },
     {
       "sporcu": "ALİ GÜRBÜZ",
       "il": "ANTALYA",
-      "sonuc": "GALİP",
-      "tur_no": 3
+      "sonuc": "",
+      "tur_no": 1
     },
     {
       "sporcu": "FEYZULLAH AKTÜRK",
       "il": "ANKARA",
-      "sonuc": "GALİP",
-      "tur_no": 3
-    },
-    {
-      "sporcu": "YILDIRAY PALA",
-      "il": "İSTANBUL",
       "sonuc": "",
-      "tur_no": 3
+      "tur_no": 1
     },
     {
       "sporcu": "ORHAN OKULU",
       "il": "ANKARA",
-      "sonuc": "GALİP",
-      "tur_no": 3
+      "sonuc": "",
+      "tur_no": 1
     },
     {
-      "sporcu": "YILDIRAY AKIN",
-      "il": "KOCAELİ",
+      "sporcu": "MUSTAFA TAŞ",
+      "il": "ANTALYA",
       "sonuc": "",
-      "tur_no": 3
-    },
-    {
-      "sporcu": "YUNUS EMRE YAMAN",
-      "il": "ANKARA",
-      "sonuc": "",
-      "tur_no": 3
+      "tur_no": 1
     },
     {
       "sporcu": "SEÇKİN DUMAN",
       "il": "KOCAELİ",
-      "sonuc": "GALİP",
-      "tur_no": 3
+      "sonuc": "",
+      "tur_no": 1
     },
     {
-      "sporcu": "YUSUF CAN ZEYBEK",
+      "sporcu": "ERKAN TAŞ",
       "il": "ANTALYA",
       "sonuc": "",
-      "tur_no": 3
-    },
-    {
-      "sporcu": "SERDAR YILDIRIM",
-      "il": "SAKARYA",
-      "sonuc": "GALİP",
-      "tur_no": 3
+      "tur_no": 1
     }
   ],
   "BasAlti__tur_no": 1,
   "BasAlti__tur_list": [
     {
-      "sporcu": "NECİP AL",
-      "il": "BALIKESİR",
-      "sonuc": "",
-      "tur_no": 1
-    },
-    {
-      "sporcu": "BEKİR CAN ÖZTURGUT",
-      "il": "BURSA",
-      "sonuc": "",
-      "tur_no": 1
-    },
-    {
       "sporcu": "OKTAY GÜNGÖR",
       "il": "BALIKESİR",
-      "sonuc": "",
-      "tur_no": 1
-    },
-    {
-      "sporcu": "SİNAN YILDIZ",
-      "il": "KOCAELİ",
       "sonuc": "",
       "tur_no": 1
     },
@@ -137,14 +71,32 @@
       "tur_no": 1
     },
     {
-      "sporcu": "İLHAN KIRMIZIKAN",
-      "il": "ANTALYA",
+      "sporcu": "BEKİR CAN ÖZTURGUT",
+      "il": "BURSA",
+      "sonuc": "",
+      "tur_no": 1
+    },
+    {
+      "sporcu": "SİNAN YILDIZ",
+      "il": "KOCAELİ",
       "sonuc": "",
       "tur_no": 1
     },
     {
       "sporcu": "YUSUF İSLAM TAŞ",
       "il": "ANTALYA",
+      "sonuc": "",
+      "tur_no": 1
+    },
+    {
+      "sporcu": "İLHAN KIRMIZIKAN",
+      "il": "ANTALYA",
+      "sonuc": "",
+      "tur_no": 1
+    },
+    {
+      "sporcu": "NECİP AL",
+      "il": "BALIKESİR",
       "sonuc": "",
       "tur_no": 1
     }
@@ -158,20 +110,20 @@
       "tur_no": 1
     },
     {
-      "sporcu": "SELÇUK KILIÇARSLAN",
-      "il": "YALOVA",
-      "sonuc": "",
-      "tur_no": 1
-    },
-    {
-      "sporcu": "MUHAMMED ENES ÖZCAN",
-      "il": "MUĞLA",
-      "sonuc": "",
-      "tur_no": 1
-    },
-    {
       "sporcu": "ENGİN ATAR",
       "il": "İSTANBUL",
+      "sonuc": "",
+      "tur_no": 1
+    },
+    {
+      "sporcu": "MEHMET CAN KAYA",
+      "il": "SAMSUN",
+      "sonuc": "",
+      "tur_no": 1
+    },
+    {
+      "sporcu": "SELÇUK KILIÇARSLAN",
+      "il": "YALOVA",
       "sonuc": "",
       "tur_no": 1
     },
@@ -188,14 +140,14 @@
       "tur_no": 1
     },
     {
-      "sporcu": "OĞUZHAN ÖZTÜRK",
-      "il": "ANTALYA",
+      "sporcu": "MUHAMMED ENES ÖZCAN",
+      "il": "MUĞLA",
       "sonuc": "",
       "tur_no": 1
     },
     {
-      "sporcu": "MEHMET CAN KAYA",
-      "il": "SAMSUN",
+      "sporcu": "OĞUZHAN ÖZTÜRK",
+      "il": "ANTALYA",
       "sonuc": "",
       "tur_no": 1
     }
